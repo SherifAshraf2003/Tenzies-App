@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Confetti from 'react-confetti';
 import './App.css'
 import Die from './Components/Die.jsx'
 
@@ -19,13 +20,26 @@ function App() {
 
   const [numbers,setNumbers] = useState(rand());
   const [tenzies, setTenzies] = useState(false);
+  const [Rolls, setRolls] = useState(0);
 
   useEffect(()=>{
-    console.log("Dice state changed !");
+    const num = numbers[0].value;
+    for (let i = 0; i < numbers.length; i++) {
+      if(numbers[i].value !== num || !numbers[i].isHeld){
+        return;
+      }
+    }
+    setTenzies(true);
+    if(tenzies){
+      setNumbers(rand());
+      setTenzies(false);
+      setRolls(0);
+    }
   }
   , [numbers])
 
   function onClick(){
+    setRolls(Rolls + 1);
     setNumbers(oldNum => oldNum.map(num => {
       return num.isHeld ?
       num :
@@ -54,7 +68,9 @@ function App() {
           {diceElements}  
         </div>
 
-        <button onClick={onClick} className='Roll'>Roll</button>
+        <button onClick={onClick} className='Roll'>{tenzies ? "New Game" : "Roll" }</button>
+        <p className="rolls">Rolls: {Rolls}</p>
+        {tenzies ? <Confetti /> : null}
 
       </div>
     </div>
